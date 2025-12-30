@@ -1,0 +1,228 @@
+
+{
+  "sessionId": "1",
+  "shaderCode": "vec3 a=vec3(1,0,0),q,p=u_cameraPosition;vec2 centered_uv=FC.xy*2.-r;float rollAngle=u_cameraRoll;mat2 rollMat=mat2(cos(rollAngle),-sin(rollAngle),sin(rollAngle),cos(rollAngle));centered_uv=rollMat*centered_uv;vec3 v=vec3(centered_uv/slider_zoom,r.y);v=rotate3D(u_cameraRotation.y,a.yxy)*v;vec3 camRight=normalize(cross(a.yxy,v));v=rotate3D(slider_cameraXRotation+u_cameraRotation.x,camRight)*v;vec3 rd=normalize(v);float glow=0.0;for(float d,i,l;l++<slider_maxIterations;p-=rd*d){q=p;d=-q.y-1.5;d+=sin(q.x*.2+t*.1)*cos(q.z*.2)*.5;for(i=1.;i<4.;i++){q=abs(q)-vec3(1.2,1.8,1.2)*slider_fractalScale;q.xz*=rotate3D(slider_fractalRotation,a.yxy).xy;q.xy*=rotate3D(slider_fractalRotation*.5,a.zzx).xy;d=min(d,length(q.xz)-.1*i);}if(d<0.001){vec3 n=normalize(vec3(0.1));vec3 col=mix(vec3(0.1,0.5,0.2),vec3(0.9,0.8,0.2),clamp(p.y*0.5+0.5,0.,1.));col=mix(col,vec3(1.,1.,0.9),slider_goldAmount*pow(max(0.,dot(reflect(rd,n),vec3(0,1,0))),5.));o.rgb=col*slider_brightness;break;}glow+=exp(-d*10.0)*slider_radiance;if(l>110.) {o.rgb+=glow*vec3(0.4,0.8,1.0);break;}}vec3 sunDir=normalize(vec3(0.2,slider_sunElevation,1.));float sunDot=max(0.,dot(rd,sunDir));vec3 sky=mix(vec3(0.2,0.6,1.0),vec3(1.0,1.0,0.8),pow(sunDot,2.0));sky+=vec3(1.0,0.9,0.7)*pow(sunDot,20.0);float dist=length(u_cameraPosition-p);float fog=1.-exp(-dist*slider_atmosphereDensity*.01);o.rgb=mix(o.rgb,sky*slider_brightness,fog);o.rgb+=vec3(1.0,0.9,0.5)*smoothstep(.99,1.,sunDot)*15.*slider_brightness;o.rgb+=vec3(0.2,1.0,0.5)*glow*0.02;",
+  "sliders": [
+    {
+      "name": "Celestial Zoom",
+      "description": "Adjusts the field of view. Lower values bring the divine structures closer.",
+      "variableName": "slider_zoom",
+      "min": 1,
+      "max": 8,
+      "step": 0.05,
+      "defaultValue": 3.5
+    },
+    {
+      "name": "Garden Complexity",
+      "description": "Controls the density and folding of the emerald landscapes.",
+      "variableName": "slider_fractalScale",
+      "min": 0.5,
+      "max": 2.5,
+      "step": 0.01,
+      "defaultValue": 1.45
+    },
+    {
+      "name": "Divine Geometry",
+      "description": "Rotates the underlying crystalline structures of the world.",
+      "variableName": "slider_fractalRotation",
+      "min": 0,
+      "max": 3.14,
+      "step": 0.01,
+      "defaultValue": 0.78
+    },
+    {
+      "name": "Radiance",
+      "description": "Controls the intensity of the atmospheric glow and divine light.",
+      "variableName": "slider_radiance",
+      "min": 0,
+      "max": 2,
+      "step": 0.01,
+      "defaultValue": 0.45
+    },
+    {
+      "name": "Gold Purity",
+      "description": "Determines the prominence of golden reflections on surfaces.",
+      "variableName": "slider_goldAmount",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "defaultValue": 0.65
+    },
+    {
+      "name": "Sun Elevation",
+      "description": "Positions the eternal sun. High values create a brilliant day, low values a golden twilight.",
+      "variableName": "slider_sunElevation",
+      "min": -0.1,
+      "max": 1,
+      "step": 0.01,
+      "defaultValue": 0.4
+    },
+    {
+      "name": "Divine Brightness",
+      "description": "Overall luminosity of the heavenly realm.",
+      "variableName": "slider_brightness",
+      "min": 0.5,
+      "max": 5,
+      "step": 0.05,
+      "defaultValue": 1.8
+    },
+    {
+      "name": "Atmospheric Veil",
+      "description": "Controls the depth of the glowing mist between the gardens.",
+      "variableName": "slider_atmosphereDensity",
+      "min": 0,
+      "max": 5,
+      "step": 0.01,
+      "defaultValue": 0.15
+    },
+    {
+      "name": "Max Detail",
+      "description": "Maximum raymarching steps for rendering distant vistas.",
+      "variableName": "slider_maxIterations",
+      "min": 50,
+      "max": 200,
+      "step": 1,
+      "defaultValue": 120
+    }
+  ],
+  "uniforms": {
+    "slider_cameraXRotation": 0,
+    "slider_zoom": 3.5,
+    "slider_fractalScale": 1.45,
+    "slider_fractalRotation": 0.78,
+    "slider_radiance": 0.45,
+    "slider_goldAmount": 0.65,
+    "slider_sunElevation": 0.4,
+    "slider_brightness": 1.8,
+    "slider_atmosphereDensity": 0.15,
+    "slider_maxIterations": 120
+  },
+  "cameraControlsEnabled": true,
+  "terraformConfig": {
+    "targets": [
+      {
+        "variableName": "slider_fractalRotation",
+        "type": "velocity",
+        "magnitude": 0.002,
+        "probability": 1
+      },
+      {
+        "variableName": "slider_radiance",
+        "type": "velocity",
+        "magnitude": 0.005,
+        "probability": 0.5
+      }
+    ]
+  },
+  "controlConfig": {
+    "invertStrafe": true,
+    "forwardVelocity": 0.25,
+    "strafeVelocity": 0.2,
+    "ascendVelocity": 0.2,
+    "pitchVelocity": 0.2,
+    "yawVelocity": 0.2,
+    "invertForward": true
+  },
+  "soundConfig": {
+    "enabled": true,
+    "masterVolume": 0.4,
+    "reverb": {
+      "enabled": true,
+      "mix": 0.75,
+      "decay": 8,
+      "tone": 3000
+    },
+    "drone": {
+      "enabled": true,
+      "gain": 0.12,
+      "filter": 80,
+      "pitch": 0
+    },
+    "atmosphere": {
+      "enabled": true,
+      "gain": 0.1,
+      "texture": "smooth"
+    },
+    "melody": {
+      "enabled": true,
+      "gain": 0.25,
+      "density": 0.35,
+      "scale": "lydian"
+    },
+    "arp": {
+      "enabled": true,
+      "gain": 0.15,
+      "speed": 0.8,
+      "octaves": 3,
+      "filter": 1200,
+      "direction": "updown"
+    },
+    "rhythm": {
+      "enabled": false,
+      "gain": 0,
+      "bpm": 40,
+      "filter": 100
+    },
+    "modulations": [
+      {
+        "id": "heavenly_1",
+        "enabled": true,
+        "source": "altitude",
+        "target": "arp.filter",
+        "amount": 1000
+      },
+      {
+        "id": "heavenly_2",
+        "enabled": true,
+        "source": "speed",
+        "target": "reverb.mix",
+        "amount": 0.2
+      },
+      {
+        "id": "heavenly_3",
+        "enabled": true,
+        "source": "pitch",
+        "target": "melody.gain",
+        "amount": 0.1
+      }
+    ]
+  },
+  "shipConfig": {
+    "complexity": 8,
+    "fold1": 0.85,
+    "fold2": 1.2,
+    "fold3": 0.2,
+    "scale": 1.5,
+    "stretch": 1.4,
+    "taper": -0.2,
+    "twist": 0.1,
+    "asymmetryX": 0,
+    "asymmetryY": 0,
+    "asymmetryZ": 0,
+    "twistAsymX": 0,
+    "scaleAsymX": 0,
+    "fold1AsymX": 0,
+    "fold2AsymX": 0,
+    "chaseDistance": 8.0,
+    "chaseVerticalOffset": 0.5,
+    "pitchOffset": -0.05,
+    "generalScale": 0.45,
+    "translucency": 0.85,
+    "modulations": [
+      {
+        "id": "ship_glow",
+        "enabled": true,
+        "source": "speed",
+        "target": "twist",
+        "amount": 0.2
+      }
+    ]
+  },
+  "canvasSize": "100%",
+  "viewMode": "chase",
+  "isHdEnabled": false,
+  "isFpsEnabled": false,
+  "isHudEnabled": true,
+  "collisionThresholdRed": 0.002,
+  "collisionThresholdYellow": 0.02
+}
