@@ -8,7 +8,10 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type { Slider, SliderSuggestion, Modulation } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Get API key from environment variables (Vite uses import.meta.env)
+const API_KEY = import.meta.env.VITE_API_KEY || import.meta.env.API_KEY;
+
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 const model = 'gemini-2.5-pro';
 
 // A centralized, detailed system instruction for all code-generation prompts.

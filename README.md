@@ -35,8 +35,9 @@ cp .env.example .env
 
 3. Add your Gemini API key to `.env`:
 ```
-API_KEY=your_actual_api_key_here
+VITE_API_KEY=your_actual_api_key_here
 ```
+Note: The `VITE_` prefix is required for Vite to expose the variable to the browser.
 
 ### Running the App
 

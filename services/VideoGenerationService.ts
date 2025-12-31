@@ -12,7 +12,14 @@ import type {
   ScriptBreakdownResponse
 } from '../video-types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Get API key from environment variables (Vite uses import.meta.env)
+const API_KEY = import.meta.env.VITE_API_KEY || import.meta.env.API_KEY;
+
+if (!API_KEY) {
+  console.error('API key is missing. Please set VITE_API_KEY environment variable.');
+}
+
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 const textModel = 'gemini-2.5-pro';
 const videoModel = 'veo-3.1-generate-preview';
 

@@ -26,15 +26,16 @@ This guide covers deploying the Video Generator app as both a web application (R
 
 3. **Configure environment variables**
    - In your Railway project dashboard, go to "Variables"
-   - Add the following variable:
+   - Add the following variable (note the VITE_ prefix is required):
      ```
-     API_KEY=your_gemini_api_key_here
+     VITE_API_KEY=your_gemini_api_key_here
      ```
 
 4. **Deploy**
    - Railway will automatically detect the configuration and deploy
    - The app will be built and deployed automatically
    - You'll get a public URL like `https://your-app.up.railway.app`
+   - **Important**: The VITE_ prefix is required for Vite to expose the variable to the browser
 
 ### Method 2: Deploy using Railway CLI
 
@@ -56,7 +57,7 @@ This guide covers deploying the Video Generator app as both a web application (R
 
 4. **Add environment variables**
    ```bash
-   railway variables set API_KEY=your_gemini_api_key_here
+   railway variables set VITE_API_KEY=your_gemini_api_key_here
    ```
 
 5. **Generate domain**
@@ -85,7 +86,7 @@ When you deploy to Railway:
 ### Environment Variables
 
 Required:
-- `API_KEY`: Your Google Gemini API key
+- `VITE_API_KEY`: Your Google Gemini API key (VITE_ prefix is required for Vite)
 
 Optional:
 - `PORT`: Server port (Railway sets this automatically)

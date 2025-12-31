@@ -16,7 +16,7 @@ Get up and running with the Video Generator in minutes!
 
    Edit `.env` and add your Gemini API key:
    ```
-   API_KEY=your_gemini_api_key_here
+   VITE_API_KEY=your_gemini_api_key_here
    ```
 
 3. **Start the development server**
@@ -64,7 +64,7 @@ Get up and running with the Video Generator in minutes!
    - Go to [railway.app](https://railway.app)
    - Click "New Project" → "Deploy from GitHub"
    - Select your repository
-   - Add `API_KEY` environment variable
+   - Add `VITE_API_KEY` environment variable (note the VITE_ prefix!)
    - Deploy automatically!
 
 ## 📦 Build Android APK
@@ -92,9 +92,10 @@ Get up and running with the Video Generator in minutes!
 
 ## 🆘 Troubleshooting
 
-### "API_KEY not found"
-- Make sure `.env` file exists with `API_KEY=...`
+### "API key is missing" error
+- Make sure `.env` file exists with `VITE_API_KEY=...` (note the VITE_ prefix!)
 - Restart the dev server after adding the key
+- For Railway: add `VITE_API_KEY` as an environment variable in the dashboard
 
 ### Android build fails
 - Make sure Android Studio is installed
