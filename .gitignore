@@ -7,10 +7,40 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output
 dist
 dist-ssr
+build
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
 *.local
+
+# Android
+android/app/release/
+android/app/debug/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/keystore.properties
+android/*.keystore
+android/*.jks
+android/app/google-services.json
+android/build/
+android/app/build/
+android/captures/
+*.iml
+
+# iOS (for future)
+ios/App/Pods/
+ios/App/Podfile.lock
+ios/.DS_Store
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +52,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+temp/
+tmp/

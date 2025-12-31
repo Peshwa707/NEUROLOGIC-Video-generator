@@ -80,19 +80,71 @@ In the **Preview** tab:
 - Stitch all scenes into a final video
 - Download the complete video
 
+## Deployment
+
+### 🌐 Web Deployment (Railway)
+
+Deploy your video generator as a web application:
+
+```bash
+# Push to GitHub
+git push origin main
+
+# Deploy on Railway (automatic via GitHub integration)
+# Or use Railway CLI
+railway up
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed web deployment instructions.
+
+### 📱 Android App
+
+Build and deploy as a native Android app:
+
+```bash
+# Sync web assets to Android
+npm run android:sync
+
+# Open in Android Studio
+npm run android:open
+
+# Build production APK
+npm run android:build
+```
+
+The APK will be at: `android/app/build/outputs/apk/release/app-release.apk`
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete Android deployment guide, including Google Play Store publishing.
+
+### 📚 Documentation
+
+- **[Quick Start Guide](./QUICK_START.md)**: Get started in 5 minutes
+- **[Deployment Guide](./DEPLOYMENT.md)**: Complete deployment instructions for web and Android
+- **[API Documentation](https://ai.google.dev/gemini-api/docs/video)**: Google Gemini Veo 3 API docs
+
 ## Technologies Used
 
 - **React 19**: UI framework
 - **TypeScript**: Type safety
 - **Vite**: Build tool and dev server
 - **Tailwind CSS**: Styling
-- **Google Gemini API**: AI video generation
+- **Google Gemini API**: AI video generation (Veo 3.1 + Gemini 2.5 Pro)
 - **MediaRecorder API**: Video stitching
+- **Capacitor**: Native mobile app framework
+- **Express**: Production web server
+
+## Platform Support
+
+- ✅ **Web**: Fully supported (Chrome, Firefox, Safari, Edge)
+- ✅ **Android**: Native app via Capacitor
+- 🔄 **iOS**: Coming soon (Capacitor ready)
 
 ## Learn More
 
 - [Google Gemini Veo 3 Documentation](https://ai.google.dev/gemini-api/docs/video)
 - [Veo 3.1 Announcement](https://developers.googleblog.com/en/introducing-veo-3-1-and-new-creative-capabilities-in-the-gemini-api/)
+- [Capacitor Documentation](https://capacitorjs.com/docs)
+- [Railway Documentation](https://docs.railway.app)
 
 ## License
 
