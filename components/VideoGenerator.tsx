@@ -134,7 +134,7 @@ export const VideoGenerator: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Video Generator</h1>
-            <p className="text-sm text-gray-400 mt-1">Powered by Google Gemini Veo 3</p>
+            <p className="text-sm text-gray-400 mt-1">Powered by Sora 2 + Gemini 2.5 Pro</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">

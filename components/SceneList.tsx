@@ -29,6 +29,7 @@ export const SceneList: React.FC<SceneListProps> = ({
   }, []);
 
   const pendingCount = scenes.filter(s => s.status === 'pending').length;
+  const queuedCount = scenes.filter(s => s.status === 'queued').length;
   const generatingCount = scenes.filter(s => s.status === 'generating').length;
   const completedCount = scenes.filter(s => s.status === 'completed').length;
   const failedCount = scenes.filter(s => s.status === 'failed').length;
@@ -56,6 +57,10 @@ export const SceneList: React.FC<SceneListProps> = ({
           <div className="bg-yellow-900/30 px-4 py-2 rounded-lg border border-yellow-600/30">
             <span className="text-yellow-400">Pending:</span>
             <span className="ml-2 font-semibold">{pendingCount}</span>
+          </div>
+          <div className="bg-amber-900/30 px-4 py-2 rounded-lg border border-amber-600/30">
+            <span className="text-amber-400">Queued:</span>
+            <span className="ml-2 font-semibold">{queuedCount}</span>
           </div>
           <div className="bg-blue-900/30 px-4 py-2 rounded-lg border border-blue-600/30">
             <span className="text-blue-400">Generating:</span>

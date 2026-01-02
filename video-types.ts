@@ -11,10 +11,10 @@ export interface VideoScene {
   resolution: '720p' | '1080p';
   negativePrompt?: string;
   referenceImages?: string[];
-  status: 'pending' | 'generating' | 'completed' | 'failed';
+  status: 'pending' | 'queued' | 'generating' | 'completed' | 'failed';
   videoUrl?: string;
   error?: string;
-  operationName?: string;
+  soraRequestId?: string;
 }
 
 export interface VideoProject {
@@ -36,20 +36,12 @@ export interface GenerateVideoRequest {
   referenceImages?: string[];
 }
 
-export interface VideoGenerationOperation {
-  name: string;
-  done: boolean;
-  error?: {
-    code: number;
-    message: string;
-  };
-  response?: {
-    generated_videos: Array<{
-      video: {
-        uri: string;
-      };
-    }>;
-  };
+export interface SoraGenerationOperation {
+  id: string;
+  status: 'queued' | 'processing' | 'succeeded' | 'failed' | 'canceled';
+  progress?: number;
+  videoUrl?: string;
+  errorMessage?: string;
 }
 
 export interface ScriptBreakdownRequest {
