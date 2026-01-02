@@ -77,7 +77,7 @@ The following files configure Railway deployment:
 
 When you deploy to Railway:
 
-1. Railway installs dependencies: `npm install`
+1. Railway installs dependencies: `npm ci`
 2. Builds the Vite app: `npm run build`
 3. Starts the Express server: `node server.js`
 4. App is available on generated domain
@@ -86,8 +86,11 @@ When you deploy to Railway:
 
 Required:
 - `API_KEY`: Your Google Gemini API key
+- `SORA_API_KEY`: Your OpenAI Sora API key
 
 Optional:
+- `SORA_MODEL`: Sora model to use (default: `sora-2`)
+- `SORA_API_BASE_URL`: Override the Sora API base URL (default: `https://api.openai.com/v1`)
 - `PORT`: Server port (Railway sets this automatically)
 
 ### Monitoring & Logs

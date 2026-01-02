@@ -34,31 +34,32 @@ export const SceneCard: React.FC<SceneCardProps> = ({
 
   // Poll for video completion
   useEffect(() => {
-    if (scene.operationName && scene.status === 'generating') {
+    if (scene.soraRequestId && (scene.status === 'generating' || scene.status === 'queued')) {
       const pollInterval = setInterval(async () => {
         try {
-          const operation = await pollVideoOperation(scene.operationName!);
+          const operation = await pollVideoOperation(scene.soraRequestId!);
 
-          if (operation.done) {
+          if (operation.status === 'processing' && scene.status !== 'generating') {
+            onUpdate({ status: 'generating' });
+          }
+
+          if (operation.status === 'succeeded' && operation.videoUrl) {
             clearInterval(pollInterval);
+            setProgress(100);
+            const blobUrl = await downloadVideo(operation.videoUrl);
 
-            if (operation.error) {
-              onUpdate({
-                status: 'failed',
-                error: operation.error.message
-              });
-            } else if (operation.response?.generated_videos?.[0]?.video?.uri) {
-              const videoUri = operation.response.generated_videos[0].video.uri;
-              const blobUrl = await downloadVideo(videoUri);
-
-              onUpdate({
-                status: 'completed',
-                videoUrl: blobUrl
-              });
-            }
+            onUpdate({
+              status: 'completed',
+              videoUrl: blobUrl
+            });
+          } else if (operation.status === 'failed' || operation.status === 'canceled') {
+            clearInterval(pollInterval);
+            onUpdate({
+              status: 'failed',
+              error: operation.errorMessage || 'Generation failed'
+            });
           } else {
-            // Update progress (estimate based on time)
-            setProgress(prev => Math.min(prev + 2, 95));
+            setProgress(prev => operation.progress ?? Math.min(prev + 5, 95));
           }
         } catch (error) {
           console.error('Error polling operation:', error);
@@ -72,7 +73,7 @@ export const SceneCard: React.FC<SceneCardProps> = ({
 
       return () => clearInterval(pollInterval);
     }
-  }, [scene.operationName, scene.status, onUpdate]);
+  }, [scene.soraRequestId, scene.status, onUpdate]);
 
   const handleGenerate = useCallback(async () => {
     if (!scene.prompt.trim()) {
@@ -84,7 +85,7 @@ export const SceneCard: React.FC<SceneCardProps> = ({
     setProgress(0);
 
     try {
-      const operationName = await generateVideo({
+      const soraRequestId = await generateVideo({
         prompt: scene.prompt,
         duration: scene.duration,
         aspectRatio: scene.aspectRatio,
@@ -93,8 +94,8 @@ export const SceneCard: React.FC<SceneCardProps> = ({
       });
 
       onUpdate({
-        status: 'generating',
-        operationName,
+        status: 'queued',
+        soraRequestId,
         error: undefined
       });
 
@@ -130,7 +131,8 @@ export const SceneCard: React.FC<SceneCardProps> = ({
 
   const getStatusColor = () => {
     switch (scene.status) {
-      case 'pending': return 'bg-yellow-900/30 border-yellow-600/30 text-yellow-400';
+      case 'pending':
+      case 'queued': return 'bg-yellow-900/30 border-yellow-600/30 text-yellow-400';
       case 'generating': return 'bg-blue-900/30 border-blue-600/30 text-blue-400';
       case 'completed': return 'bg-green-900/30 border-green-600/30 text-green-400';
       case 'failed': return 'bg-red-900/30 border-red-600/30 text-red-400';
@@ -141,6 +143,7 @@ export const SceneCard: React.FC<SceneCardProps> = ({
   const getStatusText = () => {
     switch (scene.status) {
       case 'pending': return 'Pending';
+      case 'queued': return 'Queued';
       case 'generating': return `Generating... ${progress}%`;
       case 'completed': return 'Completed';
       case 'failed': return 'Failed';

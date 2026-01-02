@@ -7,14 +7,28 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type {
   VideoScene,
   GenerateVideoRequest,
-  VideoGenerationOperation,
   ScriptBreakdownRequest,
-  ScriptBreakdownResponse
+  ScriptBreakdownResponse,
+  SoraGenerationOperation
 } from '../video-types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const textModel = 'gemini-2.5-pro';
-const videoModel = 'veo-3.1-generate-preview';
+
+const SORA_API_BASE_URL = process.env.SORA_API_BASE_URL || 'https://api.openai.com/v1';
+const SORA_MODEL = process.env.SORA_MODEL || 'sora-2';
+const SORA_API_KEY = process.env.SORA_API_KEY || process.env.OPENAI_API_KEY;
+
+const getSoraHeaders = () => {
+  if (!SORA_API_KEY) {
+    throw new Error('Missing SORA_API_KEY (or OPENAI_API_KEY) environment variable');
+  }
+
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${SORA_API_KEY}`
+  } as const;
+};
 
 /**
  * Breaks down a script into individual scenes for video generation
@@ -91,23 +105,31 @@ Example output:
 };
 
 /**
- * Generates a single video using Veo 3.1
+ * Generates a single video using Sora 2
  */
 export const generateVideo = async (request: GenerateVideoRequest): Promise<string> => {
   try {
-    // Start video generation operation
-    const operation = await ai.models.generateVideos({
-      model: videoModel,
-      prompt: request.prompt,
-      config: {
-        aspectRatio: request.aspectRatio || '16:9',
+    const response = await fetch(`${SORA_API_BASE_URL}/video/generations`, {
+      method: 'POST',
+      headers: getSoraHeaders(),
+      body: JSON.stringify({
+        model: SORA_MODEL,
+        prompt: request.prompt,
+        duration_seconds: Number(request.duration || '6'),
+        aspect_ratio: request.aspectRatio || '16:9',
         resolution: request.resolution || '720p',
-        durationSeconds: request.duration || '6',
-        negativePrompt: request.negativePrompt
-      }
+        negative_prompt: request.negativePrompt,
+        reference_images: request.referenceImages
+      })
     });
 
-    return operation.name;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Sora generation failed: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.id as string;
   } catch (error) {
     console.error('Error generating video:', error);
     throw new Error(`Failed to start video generation: ${error}`);
@@ -117,10 +139,25 @@ export const generateVideo = async (request: GenerateVideoRequest): Promise<stri
 /**
  * Polls the operation status until the video is ready
  */
-export const pollVideoOperation = async (operationName: string): Promise<VideoGenerationOperation> => {
+export const pollVideoOperation = async (requestId: string): Promise<SoraGenerationOperation> => {
   try {
-    const operation = await ai.operations.get({ name: operationName });
-    return operation as VideoGenerationOperation;
+    const response = await fetch(`${SORA_API_BASE_URL}/video/generations/${requestId}`, {
+      headers: getSoraHeaders()
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to poll Sora job: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return {
+      id: data.id,
+      status: data.status,
+      progress: data.progress,
+      videoUrl: data.output?.video_url,
+      errorMessage: data.error?.message
+    };
   } catch (error) {
     console.error('Error polling operation:', error);
     throw new Error(`Failed to check video status: ${error}`);
@@ -132,8 +169,16 @@ export const pollVideoOperation = async (operationName: string): Promise<VideoGe
  */
 export const downloadVideo = async (videoUri: string): Promise<string> => {
   try {
-    const file = await ai.files.get({ file: videoUri });
-    const blob = await file.blob();
+    const response = await fetch(videoUri, {
+      headers: SORA_API_KEY ? { Authorization: `Bearer ${SORA_API_KEY}` } : undefined
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to download video: ${errorText}`);
+    }
+
+    const blob = await response.blob();
     return URL.createObjectURL(blob);
   } catch (error) {
     console.error('Error downloading video:', error);

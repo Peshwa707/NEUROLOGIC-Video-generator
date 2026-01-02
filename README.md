@@ -1,12 +1,13 @@
-# Video Generator - Powered by Google Gemini Veo 3
+# Video Generator - Powered by Sora 2 and Google Gemini
 
-A powerful video generation tool similar to Fliki.ai, built with React and powered by Google's Gemini Veo 3 API. Generate professional videos from text scripts, with automatic scene breakdown and intelligent video stitching.
+A powerful video generation tool similar to Fliki.ai, built with React and powered by OpenAI's **Sora 2** for clip generation and Google's **Gemini 2.5 Pro** for planning. Generate professional videos from text scripts, with automatic scene breakdown and intelligent video stitching.
 
 ## Features
 
 - **Script-to-Video**: Convert text scripts into professional videos automatically
 - **AI Scene Breakdown**: Automatically breaks down scripts into optimized video scenes
-- **Veo 3 Integration**: Uses Google's latest Veo 3.1 and Veo 3.1 Fast models
+- **Sora 2 Integration**: Uses OpenAI's Sora 2 for individual video clips
+- **Gemini Planning**: Uses Gemini 2.5 Pro for scene breakdown and prompt enhancement
 - **Scene Management**: Full control over individual scenes with editing capabilities
 - **Video Stitching**: Automatically combine multiple scenes into a final video
 - **Multiple Formats**: Support for 16:9 and 9:16 aspect ratios
@@ -20,6 +21,7 @@ A powerful video generation tool similar to Fliki.ai, built with React and power
 
 - Node.js 18+
 - Google Gemini API Key ([Get one here](https://aistudio.google.com/apikey))
+- OpenAI Sora API Key ([Get one here](https://platform.openai.com/api-keys))
 
 ### Installation
 
@@ -35,7 +37,11 @@ cp .env.example .env
 
 3. Add your Gemini API key to `.env`:
 ```
-API_KEY=your_actual_api_key_here
+API_KEY=your_actual_gemini_api_key_here
+SORA_API_KEY=your_actual_sora_api_key_here
+# Optional overrides (defaults shown)
+# SORA_MODEL=sora-2
+# SORA_API_BASE_URL=https://api.openai.com/v1
 ```
 
 ### Running the App
